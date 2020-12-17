@@ -128,8 +128,10 @@ const MaterielSchema= new mongoose.Schema({
                               required:true,
                              },
                               concessionnaire:{
-                              type:mongoose.Schema.Types.ObjectId,
-                              ref:'User'
+                                 type:String,
+                                 required:true,
+                                 //type:mongoose.Schema.Types.ObjectId,
+                                 // ref:'User'
                              }
 
          
