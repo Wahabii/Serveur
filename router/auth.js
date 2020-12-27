@@ -18,7 +18,7 @@ if(!user) return res.status(400).send('invalid name or password. ');
 const validPassword= await bcrypt.compare(req.body.password, user.password); 
 if(!validPassword)return res.status(400).send('invalid email or password');
 const token=user.generateAuthToken();
-res.send({user, token})
+res.send({'username': user.name, 'id':user._id,'isAdmin': user.isAdmin, 'email': user.email, token: token},)
 });
 
 function validate(req){

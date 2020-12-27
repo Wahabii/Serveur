@@ -1,7 +1,7 @@
-const config=require('config');
+
 
 module.exports=function(){
-if(! config.get('jwtPrivateKey')){
+if(! process.env.TOKEN_KEY_PASS){
 throw new Error('FATAL ERORR: jwtprivatekey is not defined ');
 }
 }

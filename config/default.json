@@ -1,6 +1,6 @@
 
 {
-    "jwtPrivateKey":"vidly_jwtPrivateKey",
+    
     "db":"mongodb://localhost/concessionnaire_db"
 
 }

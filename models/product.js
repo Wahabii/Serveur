@@ -4,28 +4,32 @@ const mongoose=require('mongoose');
 
 
 const PoductSchema= new mongoose.Schema({
+        
+      
          
          Url:{
-             type:String,
+             type:[String]
         
          },
         
-         
          price:{
             type:Number,
              required:true,
            
          },
-
          name:{
             type:String,
             required:true,
             minlength:5,
             maxlength:50
          },
-         User:{
-             type:String
-         }
+         addedBy: 
+         {
+           type: mongoose.Schema.Types.ObjectId,
+           ref:'User'
+         },
+         
+       
 
          
       });
