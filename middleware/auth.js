@@ -2,18 +2,17 @@ const jwt=require('jsonwebtoken');
 //const config=require('config');
 
 module.exports=(req,res,next) =>{
-const token = req.header('access_token');
-if(!token) return  res.status(401).send('Access denied , no token provided');
 
-try{
-const decoded = jwt.verify(token , process.env.TOKEN_KEY_PASS);
-req.user= decoded;
-next();
-}catch(ex){
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decodedToken = jwt.verify(token, process.env.TOKEN_KEY_PASS);
+        console.log(decodedToken);
+        req.user = { email: decodedToken.email,_id: decodedToken.id };
+        next();
+      } catch (error) {
+        res.status(401).json({ message: "You are not authenticated!" });
+      }
 
-res.status(400).send('invalid token');
-
-}
 
 
 }

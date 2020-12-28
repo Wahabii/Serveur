@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const mongoose=require('mongoose');
+const jwt=require('jsonwebtoken');
 
 const {Cart, validate}=require('../models/cart');
 const auth = require('../middleware/auth');
 
 
-router.post("/",  async (req,res,next) =>{
+router.post("/", async (req,res,next) =>{
 
     const { error } = validate(req.body);
     if (error) return res.status(404).send(error.details[0].message);
-
+       const token = req.headers.authorization.split(" ")[1];
+        const decodedToken = jwt.decode(token, process.env.TOKEN_KEY_PASS);
      const cart = new Cart({
          price: req.body.price,
          amount: req.body.amount,
          name:req.body.name,
-         addedBy:req.user._id
+         addedBy:decodedToken.id
      });
 
      await cart.save().then((result)=>{
