@@ -1,7 +1,12 @@
+const path = require('path');
 const express = require("express");
-
+const cors=require("cors");
 const app = express();
 var bodyParser = require("body-parser");
+
+const passport = require('passport');
+const facebookStrategy = require('passport-facebook').Strategy
+const session = require('express-session');
 
 require("dotenv").config();
 //console.log(process.env);
@@ -10,22 +15,61 @@ require("dotenv").config();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(session({secret:"fffvvfgbbddrrrs"}))
+
+
+// make our facebook strategy
+passport.use(new facebookStrategy({
+    clientID : "1725834984241163",
+    clientSecret : "066fff8ac372c8bf9b9af53e4bf33fe4",
+    callbackURL : "http://localhost:3000/auth/facebook/callback",
+    profileFields : ['id','displayName','name','gender','picture.type(large)','email']
+},//facebook will send back the token and profile
+function(token,refreshToken,profile,done){
+    console.log(profile);
+    return done(null,profile)
+
+}));
+
+
+app.get('/auth/facebook',passport.authenticate('facebook',{scope:'email'}));
+
+app.get('/facebook/callback', passport.authenticate('facebook',{
+      successRedirect: '/profile',
+      failureRedirect: '/failed'
+}))
+
+app.get('/profile',(req,res) => {
+    res.send("you are a valid user")
+})
+
+
+app.get('/faild',(req,res) => {
+    res.send("you are non a valid user")
+})
+
+//used to serialized the user
+passport.serializeUser(function(user,done){
+   return done(null,user)
+});
+
+//used to deserialized the user
+passport.deserializeUser(function(id,done){
+ return done(null,id)
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 // Setup CORS
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(200).json({});
-  }
-  next();
-  });
+app.use(cors());
 
 // Setup static files path
-app.use("/uploads", express.static("uploads"));
+//app.use("/uploads", express.static("uploads"));
+app.use("/uploads",express.static(path.join(__dirname,"uploads")))
 
 require("./startup/routes")(app);
 require("./startup/db")();

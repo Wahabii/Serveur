@@ -45,10 +45,12 @@ router.post("/", upload.array('productImage',5) , auth , async (req, res , next)
   console.log("file is empty >>>", req.files);
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-
-
-
-
+  
+  if(!req.files) {
+    const error = new Error('No image provided.');
+    error.statusCode = 422 ;
+    throw error;
+  }
 
 
   const product = new Product( {...req.body, addedBy:req.user._id});
@@ -125,25 +127,31 @@ router.post("/", upload.array('productImage',5) , auth , async (req, res , next)
    // get all the informations about owner 
   // await product.populate('owner').execPopulate();
    //console.log("owner information >>>", product)
-
+   let addedBy;
   await product.save().then(result =>{
-     console.log("result >>>",result);
-      res.status(201).json({
-          message:"Created product successfully !" ,
-          createdProduct:{
-              
-              id: result.id,
-              price: result.price,
-              name: result.name,
-              Url:  result.Url,
-              addedBy: result.addedBy
-           
-              
-             
-             
-          }
-      })
-  }).catch(errors => {
+     return User.findById(req.user._id);
+  })
+  .then( async user =>{
+     addedBy = user;
+    await user.products.push(product);
+     return user.save();
+    
+  }).then(result => {
+    console.log("result >>>",result);
+    res.status(201).json({
+        message:"Created product successfully !" ,
+        product: product,
+        creator: {_id: addedBy._id, name: addedBy.name},
+        createdProduct:{
+            id: product.id,
+            price: product.price,
+            name: product.name,
+            Url:  product.Url,
+            addedBy: product.addedBy 
+        }
+    });
+  })
+    .catch(errors => {
       console.log(errors);
       res.status(500).json({
           error: errors
@@ -165,7 +173,7 @@ router.put("/update/:id", upload.single('productImage') , auth , async (req, res
   
     
     Product.findOne({
-      _id:req.params.id, owner:req.user._id
+      _id:req.params.id, addedBy:req.user._id
     }).then( async product => {
 
     //const user = await User.findById(req.user._id).select("-password");
@@ -230,7 +238,7 @@ router.get("/:id", auth, async (req, res) => {
 
 
 /* get all the products */
-router.get("/",  async (req, res) => {
+router.get("/", async (req, res) => {
    try{
     const product = await Product.find();
     if(!product)
@@ -248,15 +256,34 @@ router.get("/",  async (req, res) => {
 /* delete products */
 router.delete("/:id", auth, async (req, res) => {
     
-    const product = await Product.findOne({_id:req.params.id, owner:req.user._id})
+    const product = await Product.findOne({_id:req.params.id, addedBy:req.user._id})
       .then((product) => {
-        product.delete();
-        res.send({
-          message: "product have been deleted successfuly",
-        });
-      })
+          if(!product){
+             const error = new Error('Could not find product.');
+             error.statusCode = 404;
+             throw error;
+          }
+          if(product.addedBy.toString() !== req.user._id){
+             const error = new Error('Not authorized!');
+             error.statusCode = 403;
+             throw error;
+
+          }
+          return Product.findByIdAndRemove(req.params.id);})
+           .then(result => {
+            return  User.findById(req.user._id);
+        })
+        .then(user => {
+            user.products.pull(req.params.id);
+             return user.save();
+        })
+        .then(result => {
+          res.status(200).json({
+            message: "product have been deleted successfuly",
+          });
+        })
       .catch((errors) => {
-        res.status(404).send(errors);
+        res.status(500).send(errors);
       });
   });
 

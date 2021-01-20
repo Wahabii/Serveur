@@ -10,7 +10,7 @@ name:{
 type:String,
 required:true,
 minlength:5,
-maxlength:10
+maxlength:55
 },
 email:{   
 type:String,
@@ -36,11 +36,19 @@ required:true,
 minlength:5,
 maxlength:1024,
 },
+products: 
+  [{
+     type: mongoose.Schema.Types.ObjectId,
+     ref: 'Product'
+  }],
+
 isAdmin:{ 
 type: Boolean,
 default: false 
-}
-});
+ }
+},
+{timestamps: true}
+);
  
 /*
 UserSchema.virtual('products',{
@@ -59,7 +67,7 @@ const User=new mongoose.model('User',UserSchema);
 
 function validateUser(user){
 const schema ={
- name:Joi.string().min(4).max(50).required(),
+ name:Joi.string().min(5).max(50).required(),
  email:Joi.string().email().required(),
  password:Joi.string().min(5).max(255).required(),
  isAdmin:Joi.boolean(),

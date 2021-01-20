@@ -24,7 +24,8 @@ router.post("/", async (req,res, next) => {
                 quantity: req.body.quantity,
                 product: req.body.productId,
                 addedBy: req.body.user,
-                address: req.body.address
+                address: req.body.address,
+                hobies: req.body.hobies
            });
      
              await  order.save()
@@ -37,6 +38,7 @@ router.post("/", async (req,res, next) => {
                    product: result.product,
                    quantity: result.quantity,
                    address: req.body.address,
+                   hobies:req.body.hobies,
                    addedBy: req.body.user
                 },
                 request:{

@@ -26,6 +26,9 @@ const orderSchema= new mongoose.Schema({
               ref:'Product'
             }
          ,
+         hobies:{
+             
+         },
          addedBy: 
          {
            type: mongoose.Schema.Types.ObjectId,
