@@ -1,8 +1,10 @@
 const Joi =require('joi');
 const mongoose=require('mongoose');
-const config=require('config');
+
 const jwt=require('jsonwebtoken');
-const { noConflict } = require('lodash');
+
+const getKeyPass = require('./../startup/config').getKeyPass();
+
 const UserSchema= new mongoose.Schema({
 
 
@@ -41,6 +43,11 @@ products:
      type: mongoose.Schema.Types.ObjectId,
      ref: 'Product'
   }],
+  services: 
+  [{
+     type: mongoose.Schema.Types.ObjectId,
+     ref: 'Service'
+  }],
 
 isAdmin:{ 
 type: Boolean,
@@ -60,7 +67,7 @@ UserSchema.virtual('products',{
 
 
 UserSchema.methods.generateAuthToken = function () {
-const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin } , process.env.TOKEN_KEY_PASS,{expiresIn: '2 days'});
+const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin } ,getKeyPass,{expiresIn: '2 days'});
 return token ; 
 }
 const User=new mongoose.model('User',UserSchema);

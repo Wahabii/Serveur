@@ -1,14 +1,8 @@
-const auth = require("../middleware/auth");
-const jwt = require("jsonwebtoken");
-const config = require("config");
+
 const bcrypt = require("bcrypt");
-const _ = require("lodash");
-const Joi = require("joi");
-const mongoose = require("mongoose");
 const { User, validate } = require("../models/user");
-const express = require("express");
-const router = express.Router();
-const {Order, validateOrder} = require('../models/order');
+const {ObjectID} = require('mongodb');
+
 
 
 
@@ -28,14 +22,43 @@ module.exports.getUsers = async (req, res, next) => {
 
 module.exports.getUser = async (req, res) => {
   //const user= await User.findById(req.params.id);
-  const user = await User.findById(req.user._id).select("-password")
+  const user = await User.findById(req.user._id).select("-password -passwordConfirm")
   .then(user => {
+     if(!user){
+        return res.status(404).send("Id not found");
+     }
      res.status(200).json([{
      message: "User informatins",
      result: user
     }])})
      .catch(err => {
       res.status(500).json({
+           error: err
+      })
+  });
+
+}
+
+
+
+module.exports.getUserById = async (req, res) => {
+  //const user= await User.findById(req.params.id);
+   let id= req.params.id;
+   if (!ObjectID.isValid(id)){
+      return res.status(404).send("Id not valid");
+   }
+
+  await User.findById(id).select("-password -passwordConfirm")
+  .then(user => {
+     if(!user){
+        return res.status(404).send(" user not found");
+     }
+     res.status(201).json([{
+     message: "User informatins",
+     result: user
+    }])})
+     .catch(err => {
+      res.status(400).json({
            error: err
       })
   });
@@ -116,4 +139,19 @@ module.exports.getUserAdmin = (req,res) =>{
          error: err
       }])
    })
+}
+
+
+/* get number of collection users*/ 
+module.exports.getCount = (req,res) => {
+  User.find().countDocuments().then(count => {
+    res.status(201).json([{
+      message: "number of users ",
+      result: count
+  }]);
+   }).catch(err => {
+    res.status(500).send(err)
+  
+})
+
 }

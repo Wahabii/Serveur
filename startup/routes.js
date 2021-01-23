@@ -5,6 +5,7 @@ const auth=require('../router/auth');
 const products=require('../router/products');
 const orders=require('../router/orders');
 const carts=require('../router/carts');
+const services = require('../router/services');
 module.exports=function(app){
     app.use(express.json());
     app.use('/api/materiels',materiels);
@@ -13,6 +14,7 @@ module.exports=function(app){
     app.use('/api/products',products);
     app.use('/api/orders',orders);
     app.use('/api/carts', carts);
+    app.use('/api/services', services);
   
 
 }

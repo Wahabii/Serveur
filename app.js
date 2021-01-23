@@ -1,15 +1,22 @@
 const path = require('path');
+const mongoose=require('mongoose');
 const express = require("express");
 const cors=require("cors");
 const app = express();
 var bodyParser = require("body-parser");
+const socketIo = require('socket.io');
+
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 const passport = require('passport');
 const facebookStrategy = require('passport-facebook').Strategy
 const session = require('express-session');
 
 require("dotenv").config();
-//console.log(process.env);
+console.log(process.env);
 
 /// Use body parser middleware to parse body of incoming requests
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -73,7 +80,7 @@ app.use("/uploads",express.static(path.join(__dirname,"uploads")))
 
 require("./startup/routes")(app);
 require("./startup/db")();
-require("./startup/config")();
+require("./startup/config").getKeyPass();
 
 
 const port = process.env.PORT || 3000;
