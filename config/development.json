@@ -1,0 +1,6 @@
+{
+   
+    "host": "http://localhost:3000",
+    "db":"mongodb+srv://user100:52888101jjj@cluster0.evrkm.mongodb.net/EcommerceApp?retryWrites=true&w=majority"
+
+}
