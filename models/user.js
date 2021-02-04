@@ -52,7 +52,20 @@ products:
 isAdmin:{ 
 type: Boolean,
 default: false 
- }
+ },
+ serviceRequests: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ServiceRequest",
+  },
+],
+
+ categories: [
+   {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: "Categorie",
+   }
+ ]
 },
 {timestamps: true}
 );
@@ -79,7 +92,8 @@ const schema ={
  password:Joi.string().min(5).max(255).required(),
  isAdmin:Joi.boolean(),
  address: Joi.string().min(5).max(50),
- passwordConfirm: Joi.string().min(5).max(255).required()
+ passwordConfirm: Joi.string().min(5).max(255).required(),
+
 };
  return Joi.validate(user,schema);
 }

@@ -6,6 +6,10 @@ const products=require('../router/products');
 const orders=require('../router/orders');
 const carts=require('../router/carts');
 const services = require('../router/services');
+const categories = require('../router/categories');
+
+const serviceRequests = require('../router/serviceRequest');
+
 module.exports=function(app){
     app.use(express.json());
     app.use('/api/materiels',materiels);
@@ -15,6 +19,7 @@ module.exports=function(app){
     app.use('/api/orders',orders);
     app.use('/api/carts', carts);
     app.use('/api/services', services);
-  
+    app.use('/bagnola/api/categories',categories)
+    app.use('/bagnola/api/service_Requests',serviceRequests);
 
 }

@@ -1,4 +1,4 @@
-
+const _=require('lodash');
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../models/user");
 const {ObjectID} = require('mongodb');
@@ -73,7 +73,7 @@ module.exports.addUser = async (req, res) => {
     email: req.body.email,
   });
   if (user) return res.status(400).send("user aleardy registred . ");
-  user = new User(_.pick(req.body, ["name", "email", "password", "isAdmin","address","passwordConfirm"]));
+  user = new User(_.pick(req.body, ["name","email","password","isAdmin","address","passwordConfirm"]));
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   user.passwordConfirm = await bcrypt.hash(user.passwordConfirm, salt);

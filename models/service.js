@@ -14,7 +14,13 @@ const ServiceSchema = new mongoose.Schema({
      addedBy:{
          type: mongoose.Schema.Types.ObjectId,
          ref:'User'
-        }
+        },
+        id_Categorie: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref:"Categorie"
+            }
+        ]
 
 });
 
@@ -26,7 +32,8 @@ function ServiceValidate(service){
   const schema = {
      
       serviceName: Joi.string().min(3).max(20).required(),
-      note: Joi.number().required()      
+      note: Joi.number().required(),
+      id_Categorie: Joi.string()      
     }
 
     return Joi.validate(service,schema);
