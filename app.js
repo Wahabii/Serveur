@@ -152,7 +152,7 @@ const characters = [
 const greater100Characters = characters.filter(
     (character) => character.mass > 100 
 );
-//console.log(greater100Characters);
+console.log(greater100Characters);
 //2. Get characters with height less than 200
 
 const shorterChar = characters.filter(
